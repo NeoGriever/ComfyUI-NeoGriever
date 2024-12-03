@@ -47,7 +47,7 @@ class NGs_ResolutionProvider:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "preset": (s.RESOLUTION_PRESET_NAMES, {"default": RESOLUTION_PRESET_NAMES[1]}),
+                "preset": (s.RESOLUTION_PRESET_NAMES, {"default": s.RESOLUTION_PRESET_NAMES[1]}),
                 "width": ("INT", {"default": 1024, "min": 16, "max": MAX_RESOLUTION, "step": 1}),
                 "height": ("INT", {"default": 1024, "min": 16, "max": MAX_RESOLUTION, "step": 1}),
                 "scale": ("FLOAT", {"default": 1.0, "min": 0.25, "max": 4.0, "step": 0.25}),
@@ -61,7 +61,7 @@ class NGs_ResolutionProvider:
     CATEGORY = "NeoGriever/Resolutions"
     DESCRIPTION = """Did i really need a description for this?"""
 
-    def get_resoltuion(self, preset, width, height, scale, fit8):
+    def get_resolution(self, preset, width, height, scale, fit8):
         if preset is not self.RESOLUTION_PRESET_NAMES[0]:
             preset = self.RESOLUTION_PRESETS[self.RESOLUTION_PRESET_NAMES.index(preset)]
             width = preset["w"]
@@ -71,4 +71,4 @@ class NGs_ResolutionProvider:
         if fit8:
             width = (width + 7) // 8 * 8
             height = (height + 7) // 8 * 8
-        return (width, height,)
+        return (int(width), int(height),)
