@@ -10,7 +10,7 @@ NODE_CLASS_MAPPINGS = {
     "NGs_Multimask_Write": NGs_Multimask_Write,
     "NGs_Multimask_Read": NGs_Multimask_Read,
 
-    "NGs_BetterCLIPTextEncode": NGs_BetterCLIPTextEncode,
+    "NGs_BetterCLIPTextEncode": NGs_Better_CLIP_Text_Encode,
 
     "NGs_ResolutionProvider": NGs_ResolutionProvider,
 

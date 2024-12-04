@@ -1,71 +1,79 @@
 import re
-import node_helpers
+from nodes import CLIPTextEncode, ConditioningSetTimestepRange, ConditioningCombine
 
 
-class NGs_BetterCLIPTextEncode:
+class NGs_Better_CLIP_Text_Encode:
     @classmethod
-    def INPUT_TYPES(s):
+    def INPUT_TYPES(cls):
         return {
             "required": {
                 "clip": ("CLIP", {}),
-                "text": ("STRING", {"multiline": True, "dynamicPrompts": True}),
-                "betterGen": ("BOOLEAN", {"default": True, "label_off": "No", "label_on": "Yes"})
+                "text": ("STRING", {"multiline": True}),
+                "usebetter": (
+                "BOOLEAN", {"default": False, "label_on": "Better Text Encode", "label_off": "Text Encode"})
             }
         }
 
     RETURN_TYPES = ("CONDITIONING",)
-    OUTPUT_TOOLTIPS = ("NeoGriever's Better CLIP Text Encoder",)
     FUNCTION = "encode"
-
     CATEGORY = "NeoGriever/Conditioning"
     DESCRIPTION = """Guide:
-                If betterGen is active:
+                If usebetter is active:
                 Each line represents a new concatenated prompt.
                 You can put percentages on it with [0.0,1.0] like:
                 - "[0.5,1.0]A photo of a cat and a dog."
                 - this will only put the prompt at 50% to 100% of generation
-                
+
                 - "[0.5,0.75]A photo of a cat and a dog."
                 - this will put the prompt at 50% to 75% of generation
-                
+
                 - "[,0.8]A photo of a cat and a dog."
                 - this will put the prompt at 0% to 80% of generation
-                
+
                 - "[0.5]A photo of a cat and a dog."
                 - this will put the prompt from 50% to 100% of generation
-                
-                Default is [0.0,1.0], wich means full generation. 
+
+                Default is [0.0,1.0], which means full generation.
                 """
 
-    def encode(self, clip, text, betterGen):
-        if not betterGen:
-            tokens = clip.tokenize(text)
-            output = clip.encode_from_tokens(tokens, return_pooled=True, return_dict=True)
-            cond = output.pop("cond")
-            return ([[cond, output]],)
-        else:
-            result = None
-            for line in text.splitlines():
-                start = 0.0
-                end = 1.0
-                prompt = line.strip()
+    def encode(self, clip, text, usebetter):
+        # Standard Instanzen der vorhandenen Klassen
+        _clip_text_encode = CLIPTextEncode()
+        _conditioning_set_timestep_range = ConditioningSetTimestepRange()
+        _conditioning_combine = ConditioningCombine()
 
-                match = re.match(r'^\[\s*([0-9]*\.?[0-9]*)\s*(?:,\s*([0-9]*\.?[0-9]*))?\s*\](.*)', line)
+        if not usebetter:
+            # Standard CLIP Text Encode
+            return _clip_text_encode.encode(clip, text)
 
-                if match:
-                    start = float(match.group(1)) if match.group(1) else 0.0
-                    end = float(match.group(2)) if match.group(2) else 1.0
-                    prompt = match.group(3).strip()
+        # Zeilenweise Verarbeitung
+        lines = text.splitlines() if "\n" in text else [text]
+        lines = [line.strip() for line in lines if line.strip()]  # Entferne leere Zeilen
+        if not lines:
+            lines = [""]  # Füge eine leere Zeile hinzu, falls alle Zeilen leer sind
 
-                tokens = clip.tokenize(prompt)
-                output = clip.encode_from_tokens(tokens, return_pooled=True, return_dict=True)
-                cond = output.pop("cond")
+        temp_result = None
+        for line in lines:
+            # Standardmäßige Timing-Werte
+            start, end = 0.0, 1.0
 
-                cond = node_helpers.conditioning_set_values(cond, {"start_percent": start, "end_percent": end})
+            # Timing-Vorgaben überprüfen
+            timing_match = re.match(r'^\[\s*([0-9.]*\.?[0-9]*)\s*(?:,\s*([0-9.]*\.?[0-9]*))?\s*\](.*)', line)
+            if timing_match:
+                start = float(timing_match.group(1)) if timing_match.group(1) else 0.0
+                end = float(timing_match.group(2)) if timing_match.group(2) else 1.0
+                line = timing_match.group(3).strip()  # Entferne Timing-Angabe aus der Zeile
 
-                if result is None:
-                    result = [[cond, output]]
-                    continue
-                result = result + [[cond, output]]
+            # Text Encode für die Zeile
+            result = _clip_text_encode.encode(clip, line)[0]
 
-        return (result,)
+            # Setze Timing-Bereich
+            result = _conditioning_set_timestep_range.set_range(result, start, end)[0]
+
+            # Kombiniere Ergebnisse
+            if temp_result is None:
+                temp_result = result
+            else:
+                temp_result = _conditioning_combine.combine(temp_result, result)[0]
+
+        return (temp_result,)
