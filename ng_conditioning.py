@@ -1,5 +1,5 @@
 import re
-from nodes import CLIPTextEncode, ConditioningSetTimestepRange, ConditioningCombine
+from nodes import CLIPTextEncode, ConditioningSetTimestepRange, ConditioningConcat
 
 
 class NGs_Better_CLIP_Text_Encode:
@@ -40,7 +40,7 @@ class NGs_Better_CLIP_Text_Encode:
         # Standard Instanzen der vorhandenen Klassen
         _clip_text_encode = CLIPTextEncode()
         _conditioning_set_timestep_range = ConditioningSetTimestepRange()
-        _conditioning_combine = ConditioningCombine()
+        _conditioning_concat = ConditioningConcat()
 
         if not usebetter:
             # Standard CLIP Text Encode
@@ -74,6 +74,6 @@ class NGs_Better_CLIP_Text_Encode:
             if temp_result is None:
                 temp_result = result
             else:
-                temp_result = _conditioning_combine.combine(temp_result, result)[0]
+                temp_result = _conditioning_concat.concat(temp_result, result)[0]
 
         return (temp_result,)

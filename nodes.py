@@ -31,6 +31,7 @@ NODE_CLASS_MAPPINGS = {
     "NGs_Fill_with_Color": NGs_Fill_with_Color,
     "NGs_Checkerboard_Generator": NGs_Checkerboard_Generator,
     "NGs_Image_Progress_Bar": NGs_Image_Progress_Bar,
+    "NGs_Tag_Source": NGs_Tag_Source,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "NGs_Multimask_Write": "NGs Multimask - Write",
@@ -57,4 +58,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "NGs_Fill_with_Color": "NGs Image - Fill with Color",
     "NGs_Checkerboard_Generator": "NGs Image - Checkerboard Generator",
     "NGs_Image_Progress_Bar": "NGs Image - Image Progress Bar",
+
+    "NGs_Tag_Source": "NGs Other - Tag Source",
 }

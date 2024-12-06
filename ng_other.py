@@ -1,6 +1,7 @@
 from nodes import MAX_RESOLUTION
 import torch
 import numpy as np
+import random
 from PIL import Image, ImageDraw
 
 
@@ -269,3 +270,110 @@ class NGs_Image_Progress_Bar:
         b = int(hex_color[4:6], 16)
         a = int(hex_color[6:8], 16)
         return (r, g, b, a)
+
+
+class NGs_Tag_Source:
+    SOURCES = [
+        "brass", "bronze", "copper", "crystal", "gold", "iron",
+        "leather", "obsidian", "steel", "wood", "aluminum", "bamboo",
+        "bone", "clay", "concrete", "diamond", "fabric", "feather", "glass",
+        "granite", "ivory", "jade", "limestone", "marble", "mica", "parchment",
+        "plaster", "quartz", "resin", "rope", "rubber", "sandstone", "silk", "slate",
+        "velvet", "wax", "wool", "burlap", "ceramic", "charcoal", "gravel", "hemp",
+        "rattan", "resin", "sinew", "straw", "tin", "titanium", "wicker", "carbon_fiber",
+        "bark", "blossom", "desert", "flower", "forest", "grass", "moss",
+        "rock", "tree", "valley", "beach", "breeze", "canyon", "cliff",
+        "coral", "dune", "fern", "fungus", "glacier", "grove", "hill", "island",
+        "jungle", "lagoon", "lake", "meadow", "mountain", "ocean", "pine",
+        "rainforest", "reef", "river", "savanna", "spring", "stream", "swamp",
+        "tide", "waterfall", "whirlpool", "wind", "boulder", "prairie", "rose",
+        "tulip", "daisy", "orchid", "lily", "sunflower", "marigold", "lavender",
+        "cherry_blossom", "maple", "oak", "willow", "birch", "redwood", "cedar",
+        "elm", "sycamore", "spruce", "palm", "cypress", "juniper", "holly", "yew",
+        "hazel", "honeysuckle", "boxwood", "azalea", "rhododendron", "hawthorn",
+        "elderberry", "forsythia", "lavender_bush",
+        "adamantine", "aluminum", "bismuth", "brass", "bronze", "cobalt", "copper",
+        "chromium", "electrum", "gold", "hematite", "iron", "lead", "mithril", "nickel",
+        "obsidian_steel", "palladium", "platinum", "pyrite", "silver", "steel", "tin",
+        "titanium", "tungsten", "zinc", "bauxite", "chromium_steel", "damascus_steel",
+        "quicksilver", "stainless_steel", "tarnished_brass", "tarnished_silver",
+        "iridescent_metal", "rainbow_titanium", "electrum_gold", "vibranium", "star_metal",
+        "beveled", "blurred", "chiseled", "clear", "cracked", "crooked", "deformed",
+        "distorted", "etched", "faceted", "frosted", "glossy", "grainy", "hazy",
+        "lens", "matte", "mirror", "murky", "opaque", "pixelated", "polished",
+        "prismatic", "reflective", "rippled", "rough", "scratched", "shattered",
+        "shiny", "smooth", "spiky", "streaked", "tarnished", "translucent", "transparent",
+        "warped", "wavy",
+        "angular", "asymmetrical", "baroque", "blocky", "braided", "chiseled", "clean",
+        "chunky", "curved", "decorative", "delicate", "detailed", "elegant", "engraved",
+        "filigree", "flowing", "geometric", "gothic", "industrial", "intricate", "knotted",
+        "lattice", "layered", "minimalistic", "modern", "modular", "natural", "ornate",
+        "polished", "refined", "retro", "rough", "rustic", "sleek", "smooth", "spiky",
+        "spiraled", "stained", "symmetrical", "tangled", "textured", "twisted", "vintage",
+        "woven",
+        "arcane", "aural", "bioelectric", "blaze", "charge", "cosmic", "current",
+        "dark_energy", "electrical", "electromagnetic", "ether", "etheric", "flame",
+        "flux", "force", "frequency", "glow", "heat", "infernal", "infrared", "kinetic",
+        "light", "lightning", "magical", "magnetic", "momentum", "nuclear", "plasma",
+        "pulse", "pyro", "radioactive", "radiant", "resonance", "shockwave", "solar",
+        "spark", "static", "steam", "storm", "thermal", "tidal", "vibration", "voltage",
+        "warp", "wave", "wind", "quantum_energy", "zero_point",
+        "anointed", "aura", "beatific", "blessed", "celestial", "consecrated", "divine",
+        "ethereal", "glorious", "hallowed", "halo", "holy", "illuminated", "immortal",
+        "incandescent", "ineffable", "luminous", "miraculous", "numinous", "otherworldly",
+        "radiant", "reverent", "sacred", "sanctified", "seraphic", "shimmering",
+        "spiritual", "sublime", "transcendent", "twilight", "untouchable", "venerated",
+        "abyssal", "accursed", "baneful", "blighted", "chaotic", "corrupt", "cursed",
+        "damned", "dark", "demonic", "depraved", "desolate", "devilish", "diabolic",
+        "doomed", "dreadful", "fallen", "fiendish", "forsaken", "grim", "hellish",
+        "horrid", "infernal", "malevolent", "malignant", "ominous", "perverse", "profane",
+        "shadowy", "sinister", "spiteful", "tainted", "tormented", "twisted", "unclean",
+        "unholy", "vile", "wicked", "wrathful",
+        "alchemy", "amulet", "artifact", "basilisk", "bastion", "behemoth", "chimera",
+        "citadel", "crystal_ball", "cursed_blade", "dragon", "druid", "eldritch",
+        "elemental", "enchantment", "fae", "faerie", "gargoyle", "giant", "goblin",
+        "golem", "griffin", "gryphon", "horde", "hydra", "incantation", "knight",
+        "kraken", "leviathan", "lore", "mage", "magic", "manticore", "necromancer",
+        "obelisk", "ogre", "paladin", "phantasm", "phoenix", "portal", "rune",
+        "sanctuary", "scepter", "sentinel", "sorcerer", "spell", "spellbook",
+        "talisman", "totem", "tower", "unicorn", "vortex", "warlock", "wizard",
+        "wyvern",
+        "bristly", "bushy", "coarse", "curly", "dense", "downy", "feathery",
+        "fine", "fluffy", "frizzy", "fuzzy", "glossy", "greasy", "long-haired",
+        "luxurious", "matted", "oily", "patchy", "plush", "ragged", "rough",
+        "ruffled", "satin", "scraggly", "shaggy", "short-haired", "silky", "sleek",
+        "smooth", "soft", "spiky", "stringy", "sparse", "stiff", "tangled", "tufted",
+        "velvety", "voluminous", "wavy", "whispy", "wild", "wiry", "woolly", "ziz-zagged"
+    ]
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "seed": ("INT",),
+                "insanity": ("INT", {"default": 0, "min": 0, "max": 100, "step": 1, "display": "slider"}),
+                "dupes": ("BOOLEAN", {"default": False, "label_off": "Deny Dupes", "label_on": "Allow Dupes"}),
+            }
+        }
+
+    RETURN_TYPES = ("STRING", "STRING",)
+    RETURN_NAMES = ("Tags", "TagsList")
+    OUTPUT_IS_LIST = (False, True,)
+    FUNCTION = "generate_tag_source"
+    CATEGORY = "NeoGriever/Tags"
+
+    def generate_tag_source(self, seed, insanity, dupes):
+        random.seed(seed)
+        insanity_factor = 1 + (insanity / 100) * 1.5
+        tags = []
+        for i in range(int(10 * insanity_factor)):
+            while True:
+                tag = random.choice(self.SOURCES)
+                if dupes or tag not in tags:
+                    break
+            tags.append(tag)
+        tags_string = ", ".join(tags)
+        return (tags_string, tags)
