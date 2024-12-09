@@ -5,6 +5,7 @@ from .ng_textboxes import *
 from .ng_sliders import *
 from .ng_string import *
 from .ng_other import *
+from .ng_discord import *
 
 NODE_CLASS_MAPPINGS = {
     "NGs_Multimask_Write": NGs_Multimask_Write,
@@ -32,6 +33,8 @@ NODE_CLASS_MAPPINGS = {
     "NGs_Checkerboard_Generator": NGs_Checkerboard_Generator,
     "NGs_Image_Progress_Bar": NGs_Image_Progress_Bar,
     "NGs_Tag_Source": NGs_Tag_Source,
+
+    "NGs_Discord_Webhook": NGs_Discord_Webhook,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "NGs_Multimask_Write": "NGs Multimask - Write",
@@ -60,4 +63,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "NGs_Image_Progress_Bar": "NGs Image - Image Progress Bar",
 
     "NGs_Tag_Source": "NGs Other - Tag Source",
+
+    "NGs_Discord_Webhook": "NGs Discord - Webhook Send",
 }
