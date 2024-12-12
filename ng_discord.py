@@ -1,7 +1,7 @@
 import requests
 from PIL import Image
 import io
-from ng_other import tensor2pil
+from .ng_other import tensor2pil
 
 
 class NGs_Discord_Webhook:
