@@ -1,0 +1,15 @@
+[project]
+name = "comfyui-neogriever"
+description = "NeoGriever's helper nodes. Better CLIP Text Encoder, Resolution Provider,  Multimask Write/Read,  TextBoxes Simple/Join/x2/x3, Sliders INT/FLOAT/STEPPER, String Tool/Squisher/Cutter, Create Solid Color, Fill with Color, Checkerboard Generator, Image Progress Bar"
+version = "1.0.0"
+license = {file = "LICENSE"}
+dependencies = ["beautifulsoup4>=4.12.3", "transformers>=4.45.2", "numpy>=1.26.4", "pillow>=11.0.0", "requests>=2.32.3", "torch>=2.5.0", "tqdm>=4.66.5", "transparent_background>=1.2.4"]
+
+[project.urls]
+Repository = "https://github.com/NeoGriever/ComfyUI-NeoGriever"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "ComfyUI-NeoGriever"
+Icon = ""
